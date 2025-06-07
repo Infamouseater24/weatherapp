@@ -3,8 +3,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:weatherapp/constants/constants.dart';
 import 'package:weatherapp/models/weather_model.dart';
+import 'package:weatherapp/models/forecast_model.dart';
 import 'package:weatherapp/services/weather_service.dart';
 import 'package:weatherapp/widgets/weather_card.dart';
+import 'package:weatherapp/widgets/forecast_card.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class WeatherScreen extends StatefulWidget {
@@ -20,6 +22,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
     apiKey: Constants.apiKey,
   );
   WeatherModel? _weather;
+  List<ForecastModel>? _forecast;
   bool _isLoading = false;
   String? _error;
 
@@ -37,8 +40,10 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
     try {
       final weather = await _weatherService.getWeatherByCity(city);
+      final forecast = await _weatherService.getForecastByCity(city);
       setState(() {
         _weather = weather;
+        _forecast = forecast;
         _isLoading = false;
       });
     } catch (e) {
@@ -56,9 +61,25 @@ class _WeatherScreenState extends State<WeatherScreen> {
     });
 
     try {
-      final permission = await Geolocator.checkPermission();
+      LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
-        await Geolocator.requestPermission();
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          setState(() {
+            _error = 'Location permissions are denied';
+            _isLoading = false;
+          });
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        setState(() {
+          _error =
+              'Location permissions are permanently denied, we cannot request permissions.';
+          _isLoading = false;
+        });
+        return;
       }
 
       final position = await Geolocator.getCurrentPosition();
@@ -66,9 +87,14 @@ class _WeatherScreenState extends State<WeatherScreen> {
         position.latitude,
         position.longitude,
       );
+      final forecast = await _weatherService.getForecastByLocation(
+        position.latitude,
+        position.longitude,
+      );
 
       setState(() {
         _weather = weather;
+        _forecast = forecast;
         _isLoading = false;
       });
     } catch (e) {
@@ -132,7 +158,27 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 child: Text(_error!, style: const TextStyle(color: Colors.red)),
               )
             else if (_weather != null)
-              Expanded(child: WeatherCard(weather: _weather!)),
+              Expanded(
+                child: Column(
+                  children: [
+                    WeatherCard(weather: _weather!),
+                    const SizedBox(height: 16),
+                    if (_forecast != null)
+                      Expanded(
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _forecast!.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: ForecastCard(forecast: _forecast![index]),
+                            );
+                          },
+                        ),
+                      ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),
