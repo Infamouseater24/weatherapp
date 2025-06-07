@@ -8,6 +8,7 @@ import 'package:weatherapp/services/weather_service.dart';
 import 'package:weatherapp/widgets/weather_card.dart';
 import 'package:weatherapp/widgets/forecast_card.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:weatherapp/utils/theme_provider.dart';
 
 class WeatherScreen extends StatefulWidget {
   const WeatherScreen({super.key});
@@ -27,9 +28,62 @@ class _WeatherScreenState extends State<WeatherScreen> {
   String? _error;
 
   @override
+  void initState() {
+    super.initState();
+    _initLocationWeather();
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _initLocationWeather() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+    try {
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          setState(() {
+            _error = 'Location permissions are denied';
+            _isLoading = false;
+          });
+          return;
+        }
+      }
+      if (permission == LocationPermission.deniedForever) {
+        setState(() {
+          _error =
+              'Location permissions are permanently denied, we cannot request permissions.';
+          _isLoading = false;
+        });
+        return;
+      }
+      final position = await Geolocator.getCurrentPosition();
+      final weather = await _weatherService.getWeatherByLocation(
+        position.latitude,
+        position.longitude,
+      );
+      final forecast = await _weatherService.getForecastByLocation(
+        position.latitude,
+        position.longitude,
+      );
+      setState(() {
+        _weather = weather;
+        _forecast = forecast;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = Constants.locationErrorMessage;
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> _getWeatherByCity(String city) async {
@@ -54,61 +108,31 @@ class _WeatherScreenState extends State<WeatherScreen> {
     }
   }
 
-  Future<void> _getWeatherByLocation() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-
-    try {
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          setState(() {
-            _error = 'Location permissions are denied';
-            _isLoading = false;
-          });
-          return;
-        }
-      }
-
-      if (permission == LocationPermission.deniedForever) {
-        setState(() {
-          _error =
-              'Location permissions are permanently denied, we cannot request permissions.';
-          _isLoading = false;
-        });
-        return;
-      }
-
-      final position = await Geolocator.getCurrentPosition();
-      final weather = await _weatherService.getWeatherByLocation(
-        position.latitude,
-        position.longitude,
-      );
-      final forecast = await _weatherService.getForecastByLocation(
-        position.latitude,
-        position.longitude,
-      );
-
-      setState(() {
-        _weather = weather;
-        _forecast = forecast;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = Constants.locationErrorMessage;
-        _isLoading = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text(Constants.appName), centerTitle: true),
+      appBar: AppBar(
+        title: const Text(Constants.appName),
+        centerTitle: true,
+        actions: [
+          Consumer<ThemeProvider>(
+            builder: (context, themeProvider, _) {
+              final isDark = themeProvider.themeMode == ThemeMode.dark;
+              return Row(
+                children: [
+                  Icon(isDark ? Icons.dark_mode : Icons.light_mode),
+                  Switch(
+                    value: isDark,
+                    onChanged: (value) {
+                      themeProvider.toggleTheme(value);
+                    },
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -144,7 +168,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
             ),
             const SizedBox(height: 16),
             ElevatedButton.icon(
-              onPressed: _getWeatherByLocation,
+              onPressed: _initLocationWeather,
               icon: const Icon(Icons.my_location),
               label: const Text(Constants.locationButton),
             ),
