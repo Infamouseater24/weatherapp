@@ -1,95 +1,72 @@
 # Weather App
 
-A Flutter application that provides real-time weather information using the OpenWeatherMap API.
+A beautiful and intuitive weather application built with Flutter that provides real-time weather information and forecasts.
 
 ## Features
 
+- Real-time weather information
+- 5-day weather forecast
+- Location-based weather updates
 - Search for weather by city name
-- Get weather for current location
-- Display detailed weather information including:
-  - Temperature
-  - Weather description
-  - Humidity
-  - Wind speed
-  - Pressure
-- Modern Material Design 3 UI
-- Responsive layout
-- Loading indicators and error handling
+- Dark/Light theme support
+- Beautiful and modern UI
+- Offline support for saved locations
 
-## Getting Started
+## Screenshots
 
-### Prerequisites
+[Add screenshots here]
 
-- Flutter SDK (latest version)
-- Dart SDK (latest version)
-- OpenWeatherMap API key
+## Installation
 
-### Installation
+### From APK
+1. Download the latest APK from the [Releases](https://github.com/yourusername/weatherapp/releases) page
+2. Enable "Install from Unknown Sources" in your Android settings
+3. Install the APK
 
+### From Source
 1. Clone the repository:
 ```bash
 git clone https://github.com/yourusername/weatherapp.git
 ```
 
-2. Navigate to the project directory:
-```bash
-cd weatherapp
-```
-
-3. Install dependencies:
+2. Install dependencies:
 ```bash
 flutter pub get
 ```
 
-4. Update the API key:
-   - Open `lib/constants/constants.dart`
-   - Replace `YOUR_API_KEY` with your OpenWeatherMap API key
-
-5. Run the app:
+3. Run the app:
 ```bash
 flutter run
 ```
 
-## Project Structure
+## Requirements
 
-```
-lib/
-├── constants/
-│   └── constants.dart
-├── models/
-│   └── weather_model.dart
-├── screens/
-│   └── weather_screen.dart
-├── services/
-│   └── weather_service.dart
-├── widgets/
-│   └── weather_card.dart
-└── main.dart
-```
+- Android 5.0 (API level 21) or higher
+- Internet connection for weather updates
+- Location services (optional, for current location weather)
 
-## Dependencies
+## API Key
 
-- http: ^1.2.0
-- geolocator: ^11.0.0
-- provider: ^6.1.1
-- intl: ^0.19.0
-- flutter_dotenv: ^5.1.0
-- cached_network_image: ^3.3.1
-- flutter_spinkit: ^5.2.0
+This app uses the OpenWeatherMap API. You'll need to:
+1. Sign up at [OpenWeatherMap](https://openweathermap.org/api)
+2. Get your API key
+3. Create a `.env` file in the root directory
+4. Add your API key: `OPENWEATHER_API_KEY=your_api_key_here`
 
 ## Contributing
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-- OpenWeatherMap for providing the weather API
-- Flutter team for the amazing framework
+- Weather data provided by [OpenWeatherMap](https://openweathermap.org/)
+- Icons by [Flutter Icons](https://pub.dev/packages/flutter_icons)
+- UI inspiration from various weather apps
+
+## Contact
+
+For any questions or suggestions, please open an issue in the repository.

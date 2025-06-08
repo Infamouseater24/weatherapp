@@ -323,31 +323,30 @@ class _WeatherScreenState extends State<WeatherScreen> {
                       label: const Text('Add to Favorites'),
                     ),
                     const SizedBox(height: 16),
-                    if (_forecast != null)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            '5-Day Forecast',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          ..._groupForecastsByDay(_forecast!)
-                              .entries
-                              .map((entry) {
-                            // Get the forecast with the highest temperature for the day
-                            final dayForecast = entry.value.reduce((a, b) =>
-                                a.temperature > b.temperature ? a : b);
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
-                              child: ForecastCard(forecast: dayForecast),
-                            );
-                          }).toList(),
-                        ],
+                    if (_forecast != null) ...[
+                      const Text(
+                        '5-Day Forecast',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
+                      const SizedBox(height: 16),
+                      ..._groupForecastsByDay(_forecast!).entries.map((entry) {
+                        final dayForecast = entry.value.reduce(
+                            (a, b) => a.temperature > b.temperature ? a : b);
+                        return ForecastCard(forecast: dayForecast);
+                      }),
+                    ],
+                    const SizedBox(height: 32),
+                    const Text(
+                      'Made by Aananda Bastola',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                   ],
                 ),
             ],

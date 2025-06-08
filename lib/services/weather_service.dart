@@ -132,7 +132,7 @@ class WeatherService {
       // Get weather data
       final response = await http.get(
         Uri.parse(
-          '${_baseUrl}/weather?lat=${position.latitude}&lon=${position.longitude}&appid=$apiKey&units=metric',
+          '$_baseUrl/weather?lat=${position.latitude}&lon=${position.longitude}&appid=$apiKey&units=metric',
         ),
       );
 
@@ -141,7 +141,7 @@ class WeatherService {
       } else {
         throw Exception('Failed to load weather data');
       }
-    } on Exception catch (e) {
+    } on Exception {
       // If there's an error getting location, return weather for a default city
       return getWeatherByCity('Pokhara');
     } catch (e) {
