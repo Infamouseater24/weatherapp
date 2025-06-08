@@ -165,6 +165,24 @@ class _WeatherScreenState extends State<WeatherScreen> {
     _loadFavoriteCities();
   }
 
+  // Add this method to group forecasts by day
+  Map<DateTime, List<ForecastModel>> _groupForecastsByDay(
+      List<ForecastModel> forecasts) {
+    final grouped = <DateTime, List<ForecastModel>>{};
+    for (var forecast in forecasts) {
+      final date = DateTime(
+        forecast.date.year,
+        forecast.date.month,
+        forecast.date.day,
+      );
+      if (!grouped.containsKey(date)) {
+        grouped[date] = [];
+      }
+      grouped[date]!.add(forecast);
+    }
+    return grouped;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -241,8 +259,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                         const SizedBox(width: 8),
                     itemBuilder: (context, index) {
                       final city = _favoriteCities[index];
-                      final isSelected =
-                          _selectedCity?.name == city.name ||
+                      final isSelected = _selectedCity?.name == city.name ||
                           (_selectedCity == null && index == 0);
                       return InkWell(
                         onTap: () => _getWeatherForFavorite(city),
@@ -268,9 +285,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
                               ),
                             ],
                           ),
-                          backgroundColor: isSelected
-                              ? Colors.blue[200]
-                              : Colors.blue[50],
+                          backgroundColor:
+                              isSelected ? Colors.blue[200] : Colors.blue[50],
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
@@ -308,18 +324,29 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     ),
                     const SizedBox(height: 16),
                     if (_forecast != null)
-                      SizedBox(
-                        height: 150,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _forecast!.length,
-                          itemBuilder: (context, index) {
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            '5-Day Forecast',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          ..._groupForecastsByDay(_forecast!)
+                              .entries
+                              .map((entry) {
+                            // Get the forecast with the highest temperature for the day
+                            final dayForecast = entry.value.reduce((a, b) =>
+                                a.temperature > b.temperature ? a : b);
                             return Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: ForecastCard(forecast: _forecast![index]),
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: ForecastCard(forecast: dayForecast),
                             );
-                          },
-                        ),
+                          }).toList(),
+                        ],
                       ),
                   ],
                 ),

@@ -29,38 +29,68 @@ class ForecastCard extends StatelessWidget {
                 ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
             children: [
-              Text(
-                DateFormat('E, MMM d').format(forecast.date),
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: isDark ? null : Colors.blue.shade900,
+              Expanded(
+                flex: 2,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      DateFormat('EEEE, MMM d').format(forecast.date),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: isDark ? null : Colors.blue.shade900,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      forecast.description.toUpperCase(),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: isDark ? null : Colors.blue.shade700,
+                          ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 4),
-              CachedNetworkImage(
-                imageUrl:
-                    '${Constants.weatherIconBaseUrl}${forecast.icon}@2x.png',
-                height: 50,
-                width: 50,
-                placeholder: (context, url) =>
-                    const CircularProgressIndicator(),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '${forecast.temperature.toStringAsFixed(1)}°C',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: isDark ? null : Colors.blue.shade900,
-                  fontWeight: FontWeight.bold,
+              Expanded(
+                flex: 1,
+                child: CachedNetworkImage(
+                  imageUrl:
+                      '${Constants.weatherIconBaseUrl}${forecast.icon}@2x.png',
+                  height: 50,
+                  width: 50,
+                  placeholder: (context, url) =>
+                      const CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
                 ),
               ),
-              Text(
-                forecast.description.toUpperCase(),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: isDark ? null : Colors.blue.shade700,
+              Expanded(
+                flex: 1,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      '${forecast.temperature.toStringAsFixed(1)}°C',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: isDark ? null : Colors.blue.shade900,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    Text(
+                      'Humidity: ${forecast.humidity}%',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: isDark ? null : Colors.blue.shade700,
+                          ),
+                    ),
+                    Text(
+                      'Wind: ${forecast.windSpeed} m/s',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: isDark ? null : Colors.blue.shade700,
+                          ),
+                    ),
+                  ],
                 ),
               ),
             ],
