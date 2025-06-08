@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:weatherapp/models/weather_model.dart';
 import 'package:weatherapp/constants/constants.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:intl/intl.dart';
 
 class WeatherCard extends StatelessWidget {
   final WeatherModel weather;
@@ -35,33 +36,55 @@ class WeatherCard extends StatelessWidget {
               Text(
                 weather.cityName,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: isDark ? null : Colors.blue.shade900,
-                ),
+                      color: isDark ? null : Colors.blue.shade900,
+                    ),
               ),
               const SizedBox(height: 8),
-              CachedNetworkImage(
-                imageUrl:
-                    '${Constants.weatherIconBaseUrl}${weather.icon}@2x.png',
-                height: 100,
-                width: 100,
-                placeholder: (context, url) =>
-                    const CircularProgressIndicator(),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '${weather.temperature.toStringAsFixed(1)}°C',
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                  color: isDark ? null : Colors.blue.shade900,
-                ),
-              ),
-              Text(
-                weather.description.toUpperCase(),
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: isDark ? null : Colors.blue.shade700,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CachedNetworkImage(
+                    imageUrl:
+                        '${Constants.weatherIconBaseUrl}${weather.icon}@2x.png',
+                    height: 100,
+                    width: 100,
+                    placeholder: (context, url) =>
+                        const CircularProgressIndicator(),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                  ),
+                  const SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${weather.temperature.toStringAsFixed(1)}°C',
+                        style:
+                            Theme.of(context).textTheme.headlineLarge?.copyWith(
+                                  color: isDark ? null : Colors.blue.shade900,
+                                ),
+                      ),
+                      Text(
+                        'Feels like ${weather.feelsLike.toStringAsFixed(1)}°C',
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: isDark ? null : Colors.blue.shade700,
+                                ),
+                      ),
+                      Text(
+                        weather.description.toUpperCase(),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: isDark ? null : Colors.blue.shade700,
+                                ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
+              const Divider(),
+              const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -84,6 +107,57 @@ class WeatherCard extends StatelessWidget {
                     Icons.compress,
                     '${weather.pressure} hPa',
                     'Pressure',
+                    isDark,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Divider(),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildWeatherInfo(
+                    context,
+                    Icons.visibility,
+                    '${weather.visibility} km',
+                    'Visibility',
+                    isDark,
+                  ),
+                  _buildWeatherInfo(
+                    context,
+                    Icons.wb_sunny,
+                    '${weather.uvi.toStringAsFixed(1)}',
+                    'UV Index',
+                    isDark,
+                  ),
+                  _buildWeatherInfo(
+                    context,
+                    Icons.water,
+                    '${(weather.precipitationProbability * 100).toStringAsFixed(0)}%',
+                    'Precipitation',
+                    isDark,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Divider(),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildWeatherInfo(
+                    context,
+                    Icons.wb_twilight,
+                    DateFormat('h:mm a').format(weather.sunrise),
+                    'Sunrise',
+                    isDark,
+                  ),
+                  _buildWeatherInfo(
+                    context,
+                    Icons.nightlight_round,
+                    DateFormat('h:mm a').format(weather.sunset),
+                    'Sunset',
                     isDark,
                   ),
                 ],
@@ -111,15 +185,15 @@ class WeatherCard extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           value,
-          style: Theme.of(
-            context,
-          ).textTheme.titleSmall?.copyWith(color: textColor),
+          style: Theme.of(context)
+              .textTheme
+              .titleSmall
+              ?.copyWith(color: textColor),
         ),
         Text(
           label,
-          style: Theme.of(
-            context,
-          ).textTheme.bodySmall?.copyWith(color: textColor),
+          style:
+              Theme.of(context).textTheme.bodySmall?.copyWith(color: textColor),
         ),
       ],
     );
